@@ -1,3 +1,6 @@
+const fs = require('fs');
+
+
 class Task {
     constructor(title, description, deadline) {
       this.title = title;
@@ -96,9 +99,48 @@ class Task {
         console.log(`Дедлайн: ${task.deadline || 'Немає'}`);
       });
     }
+
+    // saveToFile() метод, який відповідає за збереження завдань у файл JSON
+    saveToFile() {
+      const filePath = 'task.json';
+      const tasksData = JSON.stringify(this.tasks, null, 2);
+
+
+      try {
+        fs.writeFileSync(filePath, tasksData);
+        console.log('The task has been successfully stored in a file.');
+      } catch (error) {
+        console.log('Error occurred while saving tasks to file:', error.message);
+      }
+    }
+
+    // loadFromFile() метод, який відповідає за читання завдань із файлу JSON
+    loadFromFile() {
+      const filePath = 'task.json';
+
+
+      try {
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const tasks = JSON.parse(fileContent);
+
+        if (Array.isArray(tasks)) {
+          tasks.forEach(taskData => {
+            const { title, description, deadline, completed, completedDate } = taskData;
+            const task = new Task(title, description, deadline);
+            task.completed = completed;
+            task.completedDate = completedDate;
+            this.tasks.push(task);
+          });
+
+          console.log('Tasks loaded from file.');
+        } else {
+          console.log('Invalid file format. Unable to load tasks.');
+        }
+      } catch (error) {
+        console.log('Error occurred while loading tasks from file:', error.message);
+      }
+    }
   }
-  
 
   
   const tracker = new TaskTracker();
-      
