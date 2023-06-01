@@ -1,157 +1,15 @@
-const fs = require('fs');
 const readline = require('readline');
+const TaskTracker = require('./taskTracker');
 
-class Task {
-    constructor(title, description, deadline) {
-      this.title = title;
-      this.description = description;
-      this.deadline = deadline;
-      this.completed = false;
-      this.completedDate = null;
-    }
-  }
-  
-  class TaskTracker {
-    constructor() {
-      this.tasks = [];
-    }
-  
-    addTask(title, description, deadline) {                        //Додати завдання
-      const task = new Task(title, description, deadline);
-      this.tasks.push(task);
-      console.log('Task added.');
-    }
-  
-    markTaskAsCompleted(title) {                                //Помітити як виканане
-      const task = this.findTaskByTitle(title);
-      if (task) {
-        task.completed = true;
-        task.completedDate = new Date();
-        console.log('The task is marked as completed.');
-      } else {
-        console.log('No task found.');
-      }
-    }
-  
-    editTask(title, newTitle, newDescription, newDeadline) {            //Редагувати завдання
-      const task = this.findTaskByTitle(title);
-      if (task) {
-        task.title = newTitle;
-        task.description = newDescription;
-        task.deadline = newDeadline;
-        console.log('The task has been edited.');
-      } else {
-        console.log('No task found.');
-      }
-    }
-  
-    deleteTask(title) {                                  // Видалити завдання
-      const taskIndex = this.tasks.findIndex(task => task.title === title);
-      if (taskIndex !== -1) {
-        this.tasks.splice(taskIndex, 1);
-        console.log('The task has been deleted.');
-      } else {
-        console.log('No task found.');
-      }
-    }
-  
-    findTaskByTitle(title) {
-      return this.tasks.find(task => task.title === title);
-    }
-  
-    showAllTasks() {                                          //Усі завдання
-      console.log('All tasks:');
-      this.tasks.forEach(task => {
-        console.log(`Title: ${task.title}`);
-        console.log(`Description: ${task.description || 'There is none'}`);
-        console.log(`Deadline: ${task.deadline || 'There is none'}`);
-        console.log(`Стан виконання: ${task.completed ? 'Completed' : 'Not done'}`);
-        console.log(`Execution status: ${task.completedDate || 'There is none'}`);
-      });
-    }
-  
-    showPendingTasks() {                            //Невиконані завдання
-        console.log('Unfinished tasks:');
-        const pendingTasks = this.tasks.filter(task => !task.completed);
-        const sortedTasks = pendingTasks.sort((a, b) => {
-          if (a.deadline && b.deadline) {
-            return a.deadline - b.deadline;
-          } else if (a.deadline) {
-            return -1;
-          } else if (b.deadline) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
-        sortedTasks.forEach(task => {
-          console.log(`Title: ${task.title}`);
-          console.log(`Deadline: ${task.deadline || 'There is none'}`);
-        });
-      }
-  
-    showOverdueTasks() {                                //Протерміновані завданн
-      console.log('Overdue tasks:');
-      const currentDate = new Date();
-      const overdueTasks = this.tasks.filter(task => !task.completed && task.deadline && task.deadline < currentDate);
-      overdueTasks.forEach(task => {
-        console.log(`Title: ${task.title}`);
-        console.log(`Deadline: ${task.deadline || 'There is none'}`);
-      });
-    }
+const tracker = new TaskTracker();
 
-    // saveToFile() метод, який відповідає за збереження завдань у файл JSON
-    saveToFile() {
-      const filePath = 'task.json';
-      const tasksData = JSON.stringify(this.tasks, null, 2);
-
-
-      try {
-        fs.writeFileSync(filePath, tasksData);
-        console.log('The task has been successfully stored in a file.');
-      } catch (error) {
-        console.log('Error occurred while saving tasks to file:', error.message);
-      }
-    }
-
-    // loadFromFile() метод, який відповідає за читання завдань із файлу JSON
-    loadFromFile() {
-      const filePath = 'task.json';
-
-
-      try {
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        const tasks = JSON.parse(fileContent);
-
-        if (Array.isArray(tasks)) {
-          tasks.forEach(taskData => {
-            const { title, description, deadline, completed, completedDate } = taskData;
-            const task = new Task(title, description, deadline);
-            task.completed = completed;
-            task.completedDate = completedDate;
-            this.tasks.push(task);
-          });
-
-          console.log('Tasks loaded from file.');
-        } else {
-          console.log('Invalid file format. Unable to load tasks.');
-        }
-      } catch (error) {
-        console.log('Error occurred while loading tasks from file:', error.message);
-      }
-    }
-  }
-
-  
-  const tracker = new TaskTracker();
-
-// Створення інтерфейсу для зчитування введення з консолі
+// Creating an interface for reading input from the console
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
-// Функція для обробки команди "add"
+// Function to handle the "add" command
 function handleAddCommand() {
   rl.question('Enter task title: ', (title) => {
     rl.question('Enter task description: ', (description) => {
@@ -163,7 +21,7 @@ function handleAddCommand() {
   });
 }
 
-// Функція для обробки команди "complete"
+// Function to handle the "complete" command
 function handleCompleteCommand() {
   rl.question('Enter task title to mark as completed: ', (title) => {
     tracker.markTaskAsCompleted(title);
@@ -171,7 +29,7 @@ function handleCompleteCommand() {
   });
 }
 
-// Функція для обробки команди "edit"
+// Function to handle the "edit" command
 function handleEditCommand() {
   rl.question('Enter task title to edit: ', (title) => {
     rl.question('Enter new title: ', (newTitle) => {
@@ -185,7 +43,7 @@ function handleEditCommand() {
   });
 }
 
-// Функція для обробки команди "delete"
+// Function to handle the "delete" command
 function handleDeleteCommand() {
   rl.question('Enter task title to delete: ', (title) => {
     tracker.deleteTask(title);
@@ -193,37 +51,37 @@ function handleDeleteCommand() {
   });
 }
 
-// Функція для обробки команди "show all"
+// Function to handle the "show all" command
 function handleShowAllCommand() {
   tracker.showAllTasks();
   rl.prompt();
 }
 
-// Функція для обробки команди "show pending"
+// Function to handle the "show pending" command
 function handleShowPendingCommand() {
   tracker.showPendingTasks();
   rl.prompt();
 }
 
-// Функція для обробки команди "show overdue"
+// Function to handle the "show overdue" command
 function handleShowOverdueCommand() {
   tracker.showOverdueTasks();
   rl.prompt();
 }
 
-// Функція для обробки команди "save"
+// Function to handle the "save" command
 function handleSaveCommand() {
   tracker.saveToFile();
   rl.prompt();
 }
 
-// Функція для обробки команди "load"
+// Function to handle the "load" command
 function handleLoadCommand() {
   tracker.loadFromFile();
   rl.prompt();
 }
 
-// Обробка введених команд
+// Handling the entered commands
 rl.on('line', (input) => {
   const command = input.trim().toLowerCase();
   switch (command) {
@@ -261,6 +119,6 @@ rl.on('line', (input) => {
   }
 });
 
-// Виведення повідомлення і отримання першої команди
+// Displaying a message and receiving the first command
 console.log('Task Tracker');
 rl.prompt();
