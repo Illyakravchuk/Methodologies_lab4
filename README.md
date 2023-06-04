@@ -2,6 +2,8 @@
 
 # Task Manager
 
+## [Design document](https://docs.google.com/document/d/1-ffyT4KuQeuLafxj1x7n-A_iA3BmjE4l6fe1D8Jsfzw/edit?usp=sharing)
+
 ## Description
 
 The Task Manager is a command-line application that allows you to manage your tasks and deadlines. With this application, you can add tasks, edit them, mark them as completed, and delete tasks. It provides both interactive and non-interactive modes of operation. In the interactive mode, you can enter commands directly in the command-line interface, while in the non-interactive mode, you can pass commands and arguments as command-line arguments. The application uses a TaskTracker object to manage the tasks, which are stored in memory. The tasks can be saved to and loaded from a file in JSON format. The application provides various commands, such as add, complete, edit, delete, show all, show pending, show overdue, save, and load, to perform different actions on the tasks. The interactiveInput and nonInteractiveInput modules handle user input and execute the corresponding commands based on the input. The TaskTracker module provides methods to add, edit, delete, and display tasks. The rl module is used to read input from the console. The application also includes unit tests to ensure the correctness of its functionality.
